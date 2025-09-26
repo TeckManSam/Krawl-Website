@@ -48,6 +48,26 @@
     <a href="https://discord.gg/GSsCRG55P6">Discord Link</a>
     <br>
     <br>
+    <span style="color: green;">LIVE</span><br><span id="ram">
+    </span><br>
+    <span id="cpu">
+    </span>
+    <script>
+async function updateStats() {
+  const res = await fetch("https://krawl.uk/stats");
+  const data = await res.json();
+
+  document.getElementById("cpu").innerText =
+    `Server CPU Usage: ${data.cpu_percent}%`;
+
+  document.getElementById("ram").innerText =
+    `Server RAM Usage: ${data.ram.used} GB / ${data.ram.total} GB (${data.ram.percent}%)`;
+}
+
+setInterval(updateStats, 2000);
+updateStats();
+</script>
+    <br>
     <br>
     <br>
     <br>
