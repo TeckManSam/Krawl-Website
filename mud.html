@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>MUD in Browser</title>
+  <style>
+    body { font-family: monospace; background: #111; color: #0f0; }
+    #log { white-space: pre-wrap; height: 400px; overflow-y: auto; border: 1px solid #0f0; padding: 5px; }
+    .system { color: #0ff; }    /* cyan */
+    .chat   { color: #ff0; }    /* yellow */
+    .room   { color: #0f0; }    /* green (default) */
+    .error  { color: #f00; }    /* red */
+  </style>
+</head>
+<body>
+  <div id="log"></div>
+  <input id="input" type="text" placeholder="Enter command..." autofocus>
+
+  <script>
+  const log = document.getElementById("log");
+  const input = document.getElementById("input");
+
+  const ws = new WebSocket("wss://krawl.uk/mud/");
+
+  ws.onmessage = (event) => {
+    let msg = JSON.parse(event.data);
+    addMessage(msg.text, msg.type);
+  };
+
+  function addMessage(text, type="room") {
+    const div = document.createElement("div");
+    div.textContent = text;
+    div.className = type; // system, chat, error, room
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && input.value.trim() !== "") {
+      ws.send(input.value);
+      input.value = "";
+    }
+  });
+</script>
+</body>
+</html>

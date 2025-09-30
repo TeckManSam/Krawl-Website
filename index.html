@@ -48,12 +48,16 @@
     <a href="https://discord.gg/GSsCRG55P6">Discord Link</a>
     <br>
     <br>
-    <span style="color: green;">LIVE</span><br><span id="ram">
-    </span><br>
-    <span id="cpu">
-    </span>
-    <script>
+
+    
+<span style="color: green;">LIVE</span><br>
+<span id="ram"></span><br>
+<span id="cpu"></span><br>
+<span id="gameservers"></span>
+
+<script>
 async function updateStats() {
+  // Fetch system stats
   const res = await fetch("https://krawl.uk/stats");
   const data = await res.json();
 
@@ -62,11 +66,36 @@ async function updateStats() {
 
   document.getElementById("ram").innerText =
     `Server RAM Usage: ${data.ram.used} GB / ${data.ram.total} GB (${data.ram.percent}%)`;
-}
 
-setInterval(updateStats, 2000);
+  // Fetch multiple game server stats
+  const serverRes = await fetch("https://krawl.uk/serverstats");
+  const serverData = await serverRes.json();
+
+  if (Array.isArray(serverData)) {
+    let html = "";
+    serverData.forEach(s => {
+  const status = s.online ? "ONLINE" : "OFFLINE";
+  const color = s.online ? "green" : "red";
+
+  if (s.error) {
+    html += `<div><span style="color:${color}">${status}</span> - ${s.server_name || "Unknown"} (${s.ip}:${s.port}): ${s.error}</div>`;
+  } else {
+    let mapPart = s.map ? ` | Map: ${s.map}` : "";
+    let timePart = s.game_time_elapsed ? ` | Time Elapsed: ${s.game_time_elapsed}` : "";
+
+    // highlight if players online
+    let playerHighlight = s.players > 0 ? "font-weight:bold; color:#4F72F1;" : "";
+
+    html += `<div style="${playerHighlight}"><span style="color:${color}">${status}</span> - ${s.server_name} (${s.ip}:${s.port})${mapPart} | Players: ${s.players}/${s.max_players}${timePart}</div>`;
+  }
+});
+    document.getElementById("gameservers").innerHTML = html;
+  }
+}
+setInterval(updateStats, 10000);
 updateStats();
 </script>
+
     <br>
     <br>
     <br>
