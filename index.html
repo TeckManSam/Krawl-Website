@@ -60,12 +60,39 @@ async function updateStats() {
   // Fetch system stats
   const res = await fetch("https://krawl.uk/stats");
   const data = await res.json();
+  // Set CPU color based on usage
+  // Determine CPU color
+let cpuColor;
+if (data.cpu_percent < 20) {
+    cpuColor = "green";
+} else if (data.cpu_percent < 50) {
+    cpuColor = "orange";      // lighter orange
+} else if (data.cpu_percent < 80) {
+    cpuColor = "darkorange";  // darker orange
+} else {
+    cpuColor = "red";
+}
 
-  document.getElementById("cpu").innerText =
-    `Server CPU Usage: ${data.cpu_percent}%`;
+// Update CPU element with colored value
+document.getElementById("cpu").innerHTML =
+    `Server CPU Usage: <span style="color:${cpuColor}">${data.cpu_percent}%</span>`;
 
-  document.getElementById("ram").innerText =
-    `Server RAM Usage: ${data.ram.used} GB / ${data.ram.total} GB (${data.ram.percent}%)`;
+  // Set RAM color based on usage
+let ramColor;
+if (data.ram.percent < 20) {
+    ramColor = "green";
+} else if (data.ram.percent < 50) {
+    ramColor = "orange";      // lighter orange
+} else if (data.ram.percent < 80) {
+    ramColor = "darkorange";  // darker orange
+} else {
+    ramColor = "red";
+}
+
+// Update RAM element with colored percentage
+document.getElementById("ram").innerHTML =
+    `Server RAM Usage: ${data.ram.used} GB / ${data.ram.total} GB (<span style="color:${ramColor}">${data.ram.percent}%</span>)`;
+
 
   // Fetch multiple game server stats
   const serverRes = await fetch("https://krawl.uk/serverstats");
